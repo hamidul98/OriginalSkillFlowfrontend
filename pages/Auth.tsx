@@ -14,38 +14,45 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    if (isLogin) {
-      // Updated to await the promise
-      const user = await verifyLogin(email, password);
-      if (user) {
-        createSession(user);
-        onLogin(user);
-        toast.success(`Welcome back, ${user.name}!`);
-      } else {
-        toast.error('Invalid email or password.');
-      }
-    } else {
-      if (!name || !email || !password) {
-        toast.error('Please fill in all fields.');
-        return;
-      }
-      
-      // Updated to await promise
-      const success = await registerUser({ name, email }, password);
-      if (success) {
+    try {
+      if (isLogin) {
         const user = await verifyLogin(email, password);
         if (user) {
           createSession(user);
           onLogin(user);
-          toast.success('Account created successfully!');
+          toast.success(`Welcome back, ${user.name}!`);
+        } else {
+          toast.error('Invalid email or password.');
         }
       } else {
-        toast.error('User already exists or connection error.');
+        if (!name || !email || !password) {
+          toast.error('Please fill in all fields.');
+          setIsLoading(false);
+          return;
+        }
+        
+        const success = await registerUser({ name, email }, password);
+        if (success) {
+          const user = await verifyLogin(email, password);
+          if (user) {
+            createSession(user);
+            onLogin(user);
+            toast.success('Account created successfully!');
+          }
+        } else {
+          toast.error('User already exists or connection error.');
+        }
       }
+    } catch (error) {
+      toast.error('An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -116,9 +123,9 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full mt-2" size="lg">
-              {isLogin ? 'Sign In' : 'Create Account'}
-              <ArrowRight className="ml-2 w-4 h-4" />
+            <Button type="submit" className="w-full mt-2" size="lg" disabled={isLoading}>
+              {isLoading ? 'Connecting...' : (isLogin ? 'Sign In' : 'Create Account')}
+              {!isLoading && <ArrowRight className="ml-2 w-4 h-4" />}
             </Button>
           </form>
 
