@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '../components/ui/Button';
 import { registerUser, verifyLogin, createSession } from '../services/storageService';
@@ -123,8 +122,6 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
             </Button>
           </form>
 
-          {/* Removed Toggle as per Admin Only Request (But kept code logic if you revert) */}
-          {/* 
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600">
               {isLogin ? "Don't have an account? " : "Already have an account? "}
@@ -133,7 +130,6 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
               </button>
             </p>
           </div>
-          */}
         </div>
       </div>
     </div>
