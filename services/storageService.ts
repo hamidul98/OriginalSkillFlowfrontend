@@ -322,14 +322,11 @@ export const getAdminStats = async () => {
   if (USE_BACKEND_API) {
     try {
       const users = await apiCall('/admin/users', 'GET');
-
-      // Calculate totals from backend users
+      
       let totalEntries = 0;
       let totalSkills = 0;
-
+      
       const usersWithStats = users.map((u: any) => {
-        // Backend should return users with their stats
-        // For now, we'll set default values since we don't have skill counts yet
         totalSkills += u.stats?.skills || 0;
         totalEntries += u.stats?.entries || 0;
         return {
@@ -337,7 +334,7 @@ export const getAdminStats = async () => {
           stats: u.stats || { skills: 0, entries: 0 }
         };
       });
-
+      
       return {
         totalUsers: users.length,
         totalSkills,
@@ -347,7 +344,6 @@ export const getAdminStats = async () => {
       };
     } catch (error) {
       console.error('Failed to fetch admin stats:', error);
-      // Fallback to empty data
       return {
         totalUsers: 0,
         totalSkills: 0,
@@ -360,7 +356,6 @@ export const getAdminStats = async () => {
     const users = getAllUsers();
     let totalEntries = 0;
     let totalSkills = 0;
-
     const usersWithStats = users.map(u => {
       const userSkills: Skill[] = JSON.parse(localStorage.getItem(getUserDataKey(u.id)) || '[]');
       const entriesCount = userSkills.reduce((acc, s) => acc + s.entries.length, 0);
@@ -371,7 +366,6 @@ export const getAdminStats = async () => {
         stats: { skills: userSkills.length, entries: entriesCount }
       };
     });
-
     return {
       totalUsers: users.length,
       totalSkills,
